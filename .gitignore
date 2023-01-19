@@ -1,0 +1,6 @@
+eclipse/
+.gradle/
+.idea/
+dist/
+build/
+lib/

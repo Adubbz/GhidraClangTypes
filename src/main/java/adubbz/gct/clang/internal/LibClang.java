@@ -27,7 +27,7 @@ public interface LibClang extends Library
 {
     String OS_NAME = System.getProperty("os.name").toLowerCase();
     TypeMapper TYPE_MAPPER = createTypeMapper();
-    LibClang INSTANCE = (LibClang) Native.load(isWindows() ? "libclang" : "clang", LibClang.class, Collections.singletonMap(Library.OPTION_TYPE_MAPPER, TYPE_MAPPER));
+    LibClang INSTANCE = (LibClang) Native.load(getClangPath(), LibClang.class, Collections.singletonMap(Library.OPTION_TYPE_MAPPER, TYPE_MAPPER));
 
     // https://github.com/llvm/llvm-project/blob/main/clang/include/clang-c/CXString.h
 
@@ -94,6 +94,23 @@ public interface LibClang extends Library
     private static boolean isWindows()
     {
         return OS_NAME.contains("win");
+    }
+
+    private static boolean isMac()
+    {
+        return OS_NAME.contains("mac");
+    }
+
+    private static String getClangPath()
+    {
+        if (isWindows())
+            return "libclang";
+
+        // Use Xcode's clang to spare having multiple several-hundred-MB files
+        if (isMac())
+            return "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib";
+
+        return "clang";
     }
 
     private static TypeMapper createTypeMapper()
